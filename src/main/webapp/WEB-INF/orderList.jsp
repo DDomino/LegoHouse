@@ -13,7 +13,9 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
 
-        <% ArrayList<Orders> orders = (ArrayList) session.getAttribute("orderList"); %>
+        <% ArrayList<Orders> orders = (ArrayList) request.getAttribute("orderList");
+           int user= (int) request.getAttribute("user_id");
+        %>
 
     </head>
     <body>
@@ -22,20 +24,23 @@
 
         <div>
 
+                <% for (int i = 0; i < orders.size(); i++) {%>
             <form action="FrontController">
 
+
+                       <%= orders.get(i).toString()%> 
+                <input type="hidden" name="order" value=<%= i %>>
+                <input type="hidden" name="user_id" value=<%=user%>>
                 <input type="hidden" name="command" value="handling"    
-            <% for (int i = 0; i < orders.size(); i++) {%>
-
-            <%= orders.get(i).toString()%> 
-
-            <%}%>
-
-
+                <input type="hidden" name="status" value="Complete">
+                <input type="submit" value="Complete"> <br>
             </form>
+                <%}%>
+
+
+
         </div>
 
 
     </body>
 </html>
-<input type="submit" value="Complete">  <input type="submit" value="Cancel"> <br>
