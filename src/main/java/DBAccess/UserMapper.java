@@ -2,12 +2,15 @@ package DBAccess;
 
 import FunctionLayer.House;
 import FunctionLayer.LoginSampleException;
+import FunctionLayer.Orders;
 import FunctionLayer.User;
+import PresentationLayer.Order;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 /**
  * The purpose of UserMapper is to...
@@ -57,21 +60,47 @@ public class UserMapper {
         }
     }
 
-    public static void order(User user, House house) throws LoginSampleException {
+    public static void order(User user, int length, int width, int rows) throws LoginSampleException {
         try {
             Connection con = Connector.connection();
 
-            String SQL = "INSERT INTO orders (user_id, 1x2, 2x2, 4x2)VALUES (?,?,?,?)";
+            String SQL = "INSERT INTO orders (user_id, Length, Width, Height) VALUES (?,?,?,?)";
             PreparedStatement pstmt = con.prepareStatement(SQL, Statement.RETURN_GENERATED_KEYS);
             pstmt.setInt(1, user.getId());
-            pstmt.setInt(2, house.getBricks(2));
-            pstmt.setInt(3, house.getBricks(1));
-            pstmt.setInt(4, house.getBricks(0));
+            pstmt.setInt(2, length);
+            pstmt.setInt(3, width);
+            pstmt.setInt(4, rows);
             pstmt.executeUpdate();
 
         } catch (ClassNotFoundException | SQLException ex) {
             throw new LoginSampleException(ex.getMessage());
         }
+
+    }
+
+    public static ArrayList<Orders> getOrders(int user_id) throws LoginSampleException {
+        ArrayList<Orders> orderList = new ArrayList();
+        Orders orders;
+        try {
+            Connection con = Connector.connection();
+
+            String SQL = "SELECT * FROM orders WHERE user_id = ?";
+            PreparedStatement pstmt = con.prepareStatement(SQL);
+            pstmt.setInt(1, user_id);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int order_id = rs.getInt("order_id");
+                int length = rs.getInt("Length");
+                int width = rs.getInt("Width");
+                int rows = rs.getInt("Height");
+                orders = new Orders(order_id, user_id, length, width, rows);
+                orderList.add(orders);
+            }
+
+        } catch (ClassNotFoundException | SQLException ex) {
+            throw new LoginSampleException(ex.getMessage());
+        }
+        return orderList;
 
     }
 
